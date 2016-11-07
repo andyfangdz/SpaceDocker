@@ -2,13 +2,9 @@
 // Name: Dezhi Fang
 
 // Useful defines
-#include "gba_std.h"
+#include "myLib.h"
 
 // Function prototypes
-void fillScreen3(unsigned short color);
-void waitForVBlank();
-void drawString3(int x, int y, const char *str, unsigned short color);
-
 // State enum definition
 enum GBAState {
   START,
@@ -34,14 +30,14 @@ int main() {
   unsigned short lastButtonDown = 0, buttonDown = 0;
 
   while (1) {
-    waitForVBlank();
+    waitForVblank();
     buttonDown = KEY_DOWN_NOW(BUTTON_A);
     switch (state) {
     case START:
-      fillScreen3(WHITE);
-      drawString3(4, 4, "This is the first state.", BLACK);
-      drawString3(10, 20, "Press A for the next one", BLUE);
-      drawString3(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
+      fillScreen(WHITE);
+      drawString(4, 4, "This is the first state.", BLACK);
+      drawString(10, 20, "Press A for the next one", BLUE);
+      drawString(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
       state = START_NODRAW;
       break;
 
@@ -52,10 +48,10 @@ int main() {
       break;
 
     case STATE_1:
-      fillScreen3(WHITE);
-      drawString3(4, 4, "This is the second state.", BLACK);
-      drawString3(10, 20, "Press A for the next one", BLUE);
-      drawString3(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
+      fillScreen(WHITE);
+      drawString(4, 4, "This is the second state.", BLACK);
+      drawString(10, 20, "Press A for the next one", BLUE);
+      drawString(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
       state = STATE_1_NODRAW;
       break;
 
@@ -66,10 +62,10 @@ int main() {
       break;
 
     case STATE_2:
-      fillScreen3(WHITE);
-      drawString3(4, 4, "This is the third state.", BLACK);
-      drawString3(10, 20, "Press A for the next one", BLUE);
-      drawString3(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
+      fillScreen(WHITE);
+      drawString(4, 4, "This is the third state.", BLACK);
+      drawString(10, 20, "Press A for the next one", BLUE);
+      drawString(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
       state = STATE_2_NODRAW;
       break;
 
@@ -80,10 +76,10 @@ int main() {
       break;
 
     case STATE_3:
-      fillScreen3(WHITE);
-      drawString3(4, 4, "This is the fourth state.", BLACK);
-      drawString3(10, 20, "Press A for the next one", BLUE);
-      drawString3(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
+      fillScreen(WHITE);
+      drawString(4, 4, "This is the fourth state.", BLACK);
+      drawString(10, 20, "Press A for the next one", BLUE);
+      drawString(10, 30, "In vbam, A is probably\nmapped to the Z key", GREY);
       state = STATE_3_NODRAW;
       break;
 
