@@ -11,12 +11,12 @@ PROGNAME = SpaceDocker
 
 # The object files you want to compile into your program
 # This should be a space (SPACE!) separated list of .o files
-OFILES = text.o drawing.o main.o fixed_point.o font.o
+OFILES = text.o drawing.o main.o fixed_point.o font.o vector.o images.o
 
 # The header files you have created.
 # This is necessary to determine when to recompile for files.
 # This should be a space (SPACE!) separated list of .h files
-HFILES = myLib.h
+HFILES = myLib.h images.h
 
 ################################################################################
 # These are various settings used to make the GBA toolchain work
