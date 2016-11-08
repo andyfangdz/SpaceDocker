@@ -16,3 +16,7 @@ Vector3f Vec3fAdd(Vector3f a, Vector3f b) {
   Vector3f ret = {a.x + b.x, a.y + b.y, a.z + b.z};
   return ret;
 }
+Vector2f Vec2fAdd(Vector2f a, Vector2f b) {
+  Vector2f ret = {a.x + b.x, a.y + b.y};
+  return ret;
+}

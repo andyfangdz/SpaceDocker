@@ -2,88 +2,86 @@
 // Name: Dezhi Fang
 
 // Useful defines
+#include <stdio.h>
 #include "images.h"
 #include "myLib.h"
-#include <stdio.h>
 
 // Function prototypes
 // State enum definition
 
+typedef enum GAMESTATE {
+  title_screen,
+  title_screen_nodraw,
+  game,
+  end,
+  end_nodraw
+} GAMESTATE;
+
 int main() {
   REG_DISPCNT = MODE_3 | BG2_EN;
 
-  // TODO add any additional variables here that you need
-  // Hint: You probably need one to do accurate detection of pressing A without
-  // rapidly cycling through all your states!
+  GAMESTATE state = title_screen;
+  GAMESTAT stat;
 
-  // unsigned short lastButtonDown = 0, buttonDown = 0;
-
-  Vector3f currentPos = {0}, oldPos = {0};
-  Vector3f velocity = {0};
-  Vector3f stationPos = {(SCREEN_HEIGHT / 2) << FIX_SHIFT, (SCREEN_WIDTH - 40) << FIX_SHIFT, 0};
-  FIXED add = 1 << 5;
-  FIXED addActual = add;
-  int size = SATELLITE_HEIGHT, half = SATELLITE_HEIGHT / 2;
   u32 lastBtn = BUTTONS;
   u32 thisBtn = BUTTONS;
-  u32 changedBtn = lastBtn ^ thisBtn;
-  int fuel = 100;
-  int fuelScale = 2;
-  int changed = 0;
+  u32 changedBtn = ~((lastBtn ^ thisBtn) & thisBtn);
 
-  //Initial scene rendering
-  waitForVblank();
-  drawImage(fixedToInt(stationPos.x), fixedToInt(stationPos.y), STATION_HEIGHT,
-              STATION_WIDTH, station);
-  drawRect(SCREEN_HEIGHT - 24, 0, 24, SCREEN_WIDTH, BLACK);
-  drawRectFrame(SCREEN_HEIGHT - 24, 0, 24, SCREEN_WIDTH, GREEN);
-  drawString(SCREEN_HEIGHT - 22, 5, "Use arrow keys to accelerate.", WHITE);
-  drawString(SCREEN_HEIGHT - 12, 5, "Dock with no vertical speed.", WHITE);
   while (1) {
     thisBtn = BUTTONS;
     changedBtn = ~((lastBtn ^ thisBtn) & thisBtn);
     lastBtn = thisBtn;
-    changed = 0;
-    if (KEY_DOWN_NOW(BUTTON_L)) {
-      addActual = add >> 1;
-      fuelScale = 1;
-    } else if (KEY_DOWN_NOW(BUTTON_R)) {
-      addActual = add << 1;
-      fuelScale = 4;
-    } else {
-      addActual = add;
-      fuelScale = 2;
-    }
-    if (KEY_DOWN_VAR(changedBtn, BUTTON_UP)) {
-      velocity.x -= addActual;
-      changed = 1;
-    }
-    if (KEY_DOWN_VAR(changedBtn, BUTTON_DOWN)) {
-      velocity.x += addActual;
-      changed = 1;
-    }
-    if (KEY_DOWN_VAR(changedBtn, BUTTON_LEFT)) {
-      velocity.y -= addActual;
-      changed = 1;
-    }
-    if (KEY_DOWN_VAR(changedBtn, BUTTON_RIGHT)) {
-      velocity.y += addActual;
-      changed = 1;
-    }
-    fuel -= changed * fuelScale;
-    oldPos = currentPos;
-    currentPos = Vec3fAdd(currentPos, velocity);
-    waitForVblank();
-    drawRect(SCREEN_HEIGHT / 2 + fixedToInt(oldPos.x) - half,
-             SCREEN_WIDTH / 2 + fixedToInt(oldPos.y) - half, size, size, BLACK);
+    switch (state) {
+      case title_screen:
+        fillScreenImg(title_img);
+        state = title_screen_nodraw;
+        break;
+      case title_screen_nodraw:
+        if (KEY_DOWN_VAR(changedBtn, BUTTON_START)) {
+          state = game;
+        }
+        break;
+      case game:
+        for (int i = 1; i <= 4; i++) {
+          stat = runScene(getLevel(i));
+          if (stat == SUCCESS) {
+            continue;
+          }
+          break;
+        }
 
-    drawImage(SCREEN_HEIGHT / 2 + fixedToInt(currentPos.x) - half,
-              SCREEN_WIDTH / 2 + fixedToInt(currentPos.y) - half,
-              SATELLITE_HEIGHT, SATELLITE_WIDTH, satellite);
-
-    drawRect(2, SCREEN_WIDTH - 60, 10, 50, BLACK);
-    drawRectFrame(2, SCREEN_WIDTH - 60, 10, 50, WHITE);
-    drawRect(2, SCREEN_WIDTH - 60, 10, fuel / 2, WHITE);
+        switch (stat) {
+          case RETURN:
+            state = title_screen;
+            break;
+          default:
+            state = end;
+            break;
+        }
+        break;
+      case end:
+        if (stat == CRASH) {
+          fillScreenImg(crash_img);
+        }
+        if (stat == LOST_IN_SPACE) {
+          fillScreenImg(lost_img);
+        }
+        if (stat == OUT_OF_FUEL) {
+          fillScreenImg(out_of_fuel_img);
+        }
+        if (stat == SUCCESS) {
+          fillScreenImg(successful_img);
+        }
+        state = end_nodraw;
+        break;
+      case end_nodraw:
+        if (KEY_DOWN_VAR(changedBtn, BUTTON_SELECT)) {
+          state = title_screen;
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   return 0;

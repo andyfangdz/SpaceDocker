@@ -1,5 +1,5 @@
 UseTab: false
-IndentWidth: 4
+IndentWidth: 2
 BreakBeforeBraces: AllMan
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false

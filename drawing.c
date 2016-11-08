@@ -27,7 +27,8 @@ void drawImage(int row, int col, int height, int width,
   }
 }
 
-void drawRectFrame(int row, int col, int height, int width, volatile unsigned short color) {
+void drawRectFrame(int row, int col, int height, int width,
+                   volatile unsigned short color) {
   drawRect(row, col, height, 1, color);
   drawRect(row, col, 1, width, color);
   drawRect(row, col + width - 1, height, 1, color);
@@ -56,4 +57,10 @@ void waitForVblank() {
 
 void fillScreen(volatile unsigned short color) {
   drawRect(0, 0, 360, 240, color);
+}
+
+void fillScreenImg(const unsigned short *image) {
+  REG_DMA3SAD = (u32)(image);
+  REG_DMA3DAD = (u32)(videoBuffer);
+  REG_DMA3CNT = SCREEN_WIDTH * SCREEN_HEIGHT | DMA_ON | DMA_SOURCE_INCREMENT;
 }

@@ -52,24 +52,24 @@ extern unsigned short *videoBuffer;
 
 /* DMA */
 
-#define REG_DMA0SAD *(volatile u32 *)0x40000B0 // source address
-#define REG_DMA0DAD *(volatile u32 *)0x40000B4 // destination address
-#define REG_DMA0CNT *(volatile u32 *)0x40000B8 // control register
+#define REG_DMA0SAD *(volatile u32 *)0x40000B0  // source address
+#define REG_DMA0DAD *(volatile u32 *)0x40000B4  // destination address
+#define REG_DMA0CNT *(volatile u32 *)0x40000B8  // control register
 
 // DMA channel 1 register definitions
-#define REG_DMA1SAD *(volatile u32 *)0x40000BC // source address
-#define REG_DMA1DAD *(volatile u32 *)0x40000C0 // destination address
-#define REG_DMA1CNT *(volatile u32 *)0x40000C4 // control register
+#define REG_DMA1SAD *(volatile u32 *)0x40000BC  // source address
+#define REG_DMA1DAD *(volatile u32 *)0x40000C0  // destination address
+#define REG_DMA1CNT *(volatile u32 *)0x40000C4  // control register
 
 // DMA channel 2 register definitions
-#define REG_DMA2SAD *(volatile u32 *)0x40000C8 // source address
-#define REG_DMA2DAD *(volatile u32 *)0x40000CC // destination address
-#define REG_DMA2CNT *(volatile u32 *)0x40000D0 // control register
+#define REG_DMA2SAD *(volatile u32 *)0x40000C8  // source address
+#define REG_DMA2DAD *(volatile u32 *)0x40000CC  // destination address
+#define REG_DMA2CNT *(volatile u32 *)0x40000D0  // control register
 
 // DMA channel 3 register definitions
-#define REG_DMA3SAD *(volatile u32 *)0x40000D4 // source address
-#define REG_DMA3DAD *(volatile u32 *)0x40000D8 // destination address
-#define REG_DMA3CNT *(volatile u32 *)0x40000DC // control register
+#define REG_DMA3SAD *(volatile u32 *)0x40000D4  // source address
+#define REG_DMA3DAD *(volatile u32 *)0x40000D8  // destination address
+#define REG_DMA3CNT *(volatile u32 *)0x40000DC  // control register
 
 typedef struct {
   const volatile void *src;
@@ -121,9 +121,11 @@ void drawRect(int row, int col, int height, int width, unsigned short color);
 void delay(int n);
 void waitForVblank();
 void fillScreen(unsigned short color);
+void fillScreenImg(const unsigned short *image);
 void drawRectFrame(int row, int col, int height, int width,
                    unsigned short color);
-void drawImage(int row, int col, int height, int width, const unsigned short *image);
+void drawImage(int row, int col, int height, int width,
+               const unsigned short *image);
 void drawLine(int x1, int y1, int x2, int y2, unsigned short color);
 
 /* Fixed Point Math, fixed_point.h */
@@ -148,9 +150,9 @@ INLINE FIXED fixedDiv(FIXED a, FIXED b) { return (a << FIX_SHIFT) / b; }
 
 #define ABS(x) (x > 0 ? x : -x)
 
-#define MAX(x, y) ( x > y ? x : y)
+#define MAX(x, y) (x > y ? x : y)
 
-#define MIN(x, y) ( x > y ? y : x)
+#define MIN(x, y) (x > y ? y : x)
 /* Vector defs, vector.c */
 
 typedef struct Vector2i {
@@ -180,9 +182,28 @@ Vector3i Scale3i(Vector3i v, i32 s);
 Vector2f Scale2f(Vector2f v, FIXED s);
 Vector3f Scale3f(Vector3f v, FIXED s);
 Vector3f Vec3fAdd(Vector3f a, Vector3f b);
+Vector2f Vec2fAdd(Vector2f a, Vector2f b);
 
 extern const unsigned char fontdata_6x8[12288];
 
 void drawChar(int row, int col, char ch, u16 color);
 
 void drawString(int row, int col, char *str, u16 color);
+
+typedef struct GameLevel {
+  Vector2f satellitePos;
+  Vector2f stationPos;
+  int maxFuel;
+  Vector2f startVelocity;
+  int levelId;
+} GameLevel;
+GameLevel getLevel(int level);
+
+typedef i32 GAMESTAT;
+GAMESTAT runScene(GameLevel level);
+
+#define SUCCESS 0
+#define OUT_OF_FUEL -1
+#define CRASH -2
+#define LOST_IN_SPACE -3
+#define RETURN -9
