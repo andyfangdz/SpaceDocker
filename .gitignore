@@ -1,6 +1,6 @@
 
 # Created by https://www.gitignore.io/api/c,osx,linux,visualstudiocode
-
+*.afdesign
 *.gba
 
 ### C ###
