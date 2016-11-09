@@ -1,7 +1,7 @@
 ################################################################################
 # These are variables for the GBA toolchain build
 # You can add others if you wish to
-# ***** Dezhi Fang *****
+# ***** YOUR NAME HERE *****
 ################################################################################
 
 # The name of your desired GBA game
@@ -23,21 +23,22 @@ HFILES = myLib.h images.h
 # DO NOT EDIT BELOW.
 ################################################################################
 
-TOOLDIR  = /usr/local/cs2110-tools
-ARMLIB   = $(TOOLDIR)/arm-thumb-eabi/lib
+TOOLDIR  = /Users/andy/devkitPro/devkitARM
+ARMLIB   = $(TOOLDIR)/arm-none-eabi/lib
 CFLAGS   = -Wall -Werror -std=c99 -pedantic -Wextra
+CFLAGS   += -mthumb  # !!important
 CFLAGS   += -mthumb-interwork -mlong-calls -nostartfiles -MMD -MP -I $(TOOLDIR)/include
 LDFLAGS = -L $(TOOLDIR)/lib \
-		  -L $(TOOLDIR)/lib/gcc/arm-thumb-eabi/4.4.1/thumb \
+		  -L $(TOOLDIR)/lib/gcc/arm-none-eabi/5.3.0/thumb \
 		  -L $(ARMLIB) \
-		  --script $(ARMLIB)/arm-gba.ld
+		  --specs=$(ARMLIB)/gba.specs
 CDEBUG   = -g -DDEBUG
 CRELEASE = -O2
-CC       = $(TOOLDIR)/bin/arm-thumb-eabi-gcc
-AS       = $(TOOLDIR)/bin/arm-thumb-eabi-as
-LD       = $(TOOLDIR)/bin/arm-thumb-eabi-ld
-OBJCOPY  = $(TOOLDIR)/bin/arm-thumb-eabi-objcopy
-GDB      = $(TOOLDIR)/bin/arm-thumb-eabi-gdb
+CC       = $(TOOLDIR)/bin/arm-none-eabi-gcc
+AS       = $(TOOLDIR)/bin/arm-none-eabi-as
+LD       = $(TOOLDIR)/bin/arm-none-eabi-gcc
+OBJCOPY  = $(TOOLDIR)/bin/arm-none-eabi-objcopy
+GDB      = $(TOOLDIR)/bin/arm-none-eabi-gdb
 CFILES   = $(OFILES:.o=.c)
 
 ################################################################################
@@ -54,12 +55,9 @@ $(PROGNAME).gba : $(PROGNAME).elf
 	@echo "[LINK] Linking objects together to create $(PROGNAME).gba"
 	@$(OBJCOPY) -O binary $(PROGNAME).elf $(PROGNAME).gba
 
-$(PROGNAME).elf : crt0.o $(OFILES)
+$(PROGNAME).elf : $(OFILES)
 	@$(LD) $(LDFLAGS) -o $(PROGNAME).elf $^ -lgcc -lc -lgcc $(LDDEBUG)
 	@rm -f *.d
-
-crt0.o : $(ARMLIB)/crt0.s
-	@$(AS) -mthumb-interwork $^ -o crt0.o
 
 %.o : %.c
 	@echo "[COMPILE] Compiling $<"
@@ -76,7 +74,7 @@ clean :
 vba : CFLAGS += $(CRELEASE)
 vba : $(PROGNAME).gba
 	@echo "[EXECUTE] Running Emulator VBA-M"
-	@vbam $(VBAOPT) $(PROGNAME).gba > /dev/null 2> /dev/null
+	@open $(PROGNAME).gba
 
 med : CFLAGS += $(CRELEASE)
 med : $(PROGNAME).gba
